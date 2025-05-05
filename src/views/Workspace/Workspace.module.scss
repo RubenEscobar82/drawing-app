@@ -1,0 +1,52 @@
+@use "@src/styles/abstracts/colors" as cls;
+@use "@src/styles/abstracts/breakpoints" as bps;
+@use "@src/styles/abstracts/mixins" as mxs;
+
+$toolbar-size: 60px;
+
+#workspace {
+  width: 100dvw;
+  height: 100dvh;
+  background-color: cls.$color-dark;
+
+  .toolBar {
+    position: fixed;
+    background-color: cls.$color-primary-dark;
+    display: flex;
+    padding: 0.5rem;
+    gap: 0.5rem;
+
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: $toolbar-size;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    transition: all 0.3s ease;
+
+    // For big screens
+    @include mxs.respond-up(bps.$breakpoint-md) {
+      top: 0;
+      bottom: 0;
+      left: 0;
+      width: $toolbar-size;
+      height: 100dvh;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: center;
+    }
+
+    .tool {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+
+      &:hover {
+        transform: scale(1.2);
+      }
+    }
+  }
+}
