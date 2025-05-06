@@ -1,8 +1,3 @@
 @use "./abstracts/_colors" as *;
 @use "./abstracts/_breakpoints" as *;
 @use "./abstracts/mixins" as *;
-
-body {
-  margin: 0px;
-  padding: 0px;
-}
