@@ -36,17 +36,5 @@ $toolbar-size: 60px;
       justify-content: flex-start;
       align-items: center;
     }
-
-    .tool {
-      background: none;
-      border: none;
-      font-size: 1.5rem;
-      cursor: pointer;
-      transition: transform 0.2s ease;
-
-      &:hover {
-        transform: scale(1.2);
-      }
-    }
   }
 }

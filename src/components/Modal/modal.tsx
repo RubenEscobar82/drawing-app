@@ -1,15 +1,20 @@
 import { FC, ReactNode } from "react";
 import { createPortal } from "react-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import styles from "./modal.module.scss";
 
-interface ModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  closeOnOverlayClick?: boolean;
+interface ModalPropsBase {
   children: ReactNode;
 }
 
-const Modal: FC<ModalProps> = ({
+interface ModalProps extends ModalPropsBase {
+  isOpen: boolean;
+  onClose: () => void;
+  closeOnOverlayClick?: boolean;
+}
+
+const ModalBase: FC<ModalProps> = ({
   isOpen,
   onClose,
   children,
@@ -27,7 +32,7 @@ const Modal: FC<ModalProps> = ({
     <div className={styles.overlay} onClick={handleOverlayClick}>
       <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
         <div className={styles.closeButton} onClick={onClose}>
-          x
+          <FontAwesomeIcon icon={faTimes} />
         </div>
         {children}
       </div>
@@ -35,5 +40,17 @@ const Modal: FC<ModalProps> = ({
     document.body
   );
 };
+
+const Modal = Object.assign(ModalBase, {
+  Header: ({ children }: ModalPropsBase) => (
+    <div className={styles.modalHeader}>{children}</div>
+  ),
+  Body: ({ children }: ModalPropsBase) => (
+    <div className={styles.modalBody}>{children}</div>
+  ),
+  Footer: ({ children }: ModalPropsBase) => (
+    <div className={styles.modalFooter}>{children}</div>
+  ),
+});
 
 export default Modal;
