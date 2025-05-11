@@ -3,38 +3,87 @@
 @use "@src/styles/abstracts/mixins" as mxs;
 
 $toolbar-size: 60px;
+$bottom-bar-size: 60px;
+$workspace-width: 100dvw;
+$workspace-height: 100dvh;
 
 #workspace {
-  width: 100dvw;
-  height: 100dvh;
+  width: $workspace-width;
+  height: $workspace-height;
   background-color: cls.$color-dark;
 
-  .toolBar {
+  .toolBar,
+  .bottomBar,
+  .canvasWrapper {
     position: fixed;
-    background-color: cls.$color-primary-dark;
+    box-sizing: border-box;
+  }
+
+  .toolBar,
+  .bottomBar {
     display: flex;
     padding: 0.5rem;
-    gap: 0.5rem;
+    background-color: cls.$color-primary-dark;
+  }
 
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: $toolbar-size;
-    flex-direction: row;
+  .toolBar {
+    gap: 0.5rem;
     justify-content: space-around;
     align-items: center;
-    transition: all 0.3s ease;
+  }
 
-    // For big screens
-    @include mxs.respond-up(bps.$breakpoint-md) {
+  .bottomBar {
+    height: $bottom-bar-size;
+  }
+
+  // For small screens
+  @include mxs.respond-down(bps.$breakpoint-md) {
+    .toolBar {
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: $toolbar-size;
+      flex-direction: row;
+    }
+
+    .bottomBar {
+      top: 0;
+      left: 0;
+      width: $workspace-width;
+    }
+
+    .canvasWrapper {
+      width: $workspace-width;
+      height: calc($workspace-height - $toolbar-size - $bottom-bar-size);
+      left: 0;
+      top: $bottom-bar-size;
+    }
+  }
+
+  // For big screens
+  @include mxs.respond-up(bps.$breakpoint-md) {
+    .toolBar {
       top: 0;
       bottom: 0;
       left: 0;
       width: $toolbar-size;
-      height: 100dvh;
+      height: $workspace-height;
       flex-direction: column;
       justify-content: flex-start;
       align-items: center;
+    }
+
+    .bottomBar {
+      width: calc($workspace-width - $toolbar-size);
+      bottom: 0;
+      right: 0;
+    }
+
+    .canvasWrapper {
+      width: calc($workspace-width - $toolbar-size);
+      height: calc($workspace-height - $bottom-bar-size);
+      left: $toolbar-size;
+      top: 0;
     }
   }
 }
