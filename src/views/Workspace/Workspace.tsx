@@ -1,6 +1,6 @@
 import { FC } from "react";
-import styles from "./Workspace.module.scss";
 import { Canvas } from "@src/components";
+import styles from "./Workspace.module.scss";
 
 const Workspace: FC = () => {
   return (
