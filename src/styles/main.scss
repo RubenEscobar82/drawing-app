@@ -1,3 +1,43 @@
 @use "./abstracts/_colors" as *;
 @use "./abstracts/_breakpoints" as *;
 @use "./abstracts/mixins" as *;
+
+.bg-primary {
+  background-color: $color-primary;
+}
+.text-primary {
+  color: $color-primary;
+}
+.border-primary {
+  border-color: $color-primary;
+}
+
+.bg-primary-dark {
+  background-color: $color-primary-dark;
+}
+.text-primary-dark {
+  color: $color-primary-dark;
+}
+.border-primary-dark {
+  border-color: $color-primary-dark;
+}
+
+.bg-primary-secondary {
+  background-color: $color-secondary;
+}
+.text-secondary {
+  color: $color-secondary;
+}
+.border-secondary {
+  border-color: $color-secondary;
+}
+
+.bg-dark {
+  background-color: $color-dark;
+}
+.text-dark {
+  color: $color-dark;
+}
+.border-dark {
+  border-color: $color-dark;
+}

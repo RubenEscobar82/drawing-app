@@ -1,40 +1,57 @@
 import { FC, ReactNode, useRef, useState } from "react";
 import { DisplayCanvasConfig } from "@src/types";
 import { CanvasContext } from "@src/contexts";
+import { getCanvasCtxFromRef, clearCanvas } from "@src/helpers";
 
 interface CanvasContextProviderProps {
   children: ReactNode;
 }
 
 const CanvasProvider: FC<CanvasContextProviderProps> = ({ children }) => {
-  const defaultWidth = 350;
-  const defaultHeight = 300;
+  const defaultCanvasWidth = 350;
+  const defaultCanvasHeight = 300;
 
   const [displayCanvasConfig, setDisplayCanvasConfig] =
     useState<DisplayCanvasConfig>({
-      canvasWidth: defaultWidth,
-      canvasHeight: defaultHeight,
+      canvasWidth: defaultCanvasWidth,
+      canvasHeight: defaultCanvasHeight,
       scale: 1,
-      imgWidth: defaultWidth,
-      imgHeight: defaultHeight,
+      imgWidth: defaultCanvasWidth,
+      imgHeight: defaultCanvasHeight,
       offsetX: 0,
       offsetY: 0,
     });
 
   const offscreenCanvasRef = useRef(
-    new OffscreenCanvas(defaultWidth, defaultHeight)
+    new OffscreenCanvas(defaultCanvasWidth, defaultCanvasHeight)
   );
   const displayCanvasRef = useRef<HTMLCanvasElement | null>(null);
+
+  const drawOnCanvasDisplay = (image: CanvasImageSource) => {
+    getCanvasCtxFromRef({ ref: displayCanvasRef }, (ctx) => {
+      ctx.canvas.width = displayCanvasConfig.canvasWidth;
+      ctx.canvas.height = displayCanvasConfig.canvasHeight;
+
+      ctx.imageSmoothingEnabled = false;
+
+      clearCanvas(displayCanvasRef);
+
+      ctx.translate(displayCanvasConfig.offsetX, displayCanvasConfig.offsetY);
+      ctx.scale(displayCanvasConfig.scale, displayCanvasConfig.scale);
+      ctx.drawImage(image, 0, 0);
+    });
+  };
 
   return (
     <CanvasContext.Provider
       value={{
-        defaultWidth,
-        defaultHeight,
+        defaultCanvasWidth,
+        defaultCanvasHeight,
         offscreenCanvasRef,
         displayCanvasRef,
         displayCanvasConfig,
         setDisplayCanvasConfig,
+        drawOnCanvasDisplay,
       }}
     >
       {children}

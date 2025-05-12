@@ -7,15 +7,95 @@ $bottom-bar-size: 60px;
 $workspace-width: 100dvw;
 $workspace-height: 100dvh;
 
+#splash {
+  position: absolute;
+  width: $workspace-width;
+  min-width: 350px;
+  height: $workspace-height;
+  min-height: 300px;
+  background-color: cls.$color-primary-dark;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  box-sizing: border-box;
+  background: cls.$color-primary-dark;
+  overflow: auto;
+  z-index: 1;
+
+  .splashContent {
+    background-color: cls.$color-primary-dark;
+    padding: 2.5rem;
+    border-radius: 1.5rem;
+    border-style: dotted;
+    border-color: cls.$color-secondary;
+    max-width: 400px;
+    width: 100%;
+    text-align: center;
+
+    h1 {
+      font-size: 1.8rem;
+      margin-bottom: 0.5rem;
+      color: cls.$color-light;
+    }
+
+    p {
+      color: cls.$color-text-dim;
+      margin-bottom: 2rem;
+    }
+
+    .fileUpload,
+    .blankButton {
+      transition: all 0.3s;
+      cursor: pointer;
+      padding: 0.75rem 1.5rem;
+    }
+
+    .fileUpload {
+      display: block;
+      background-color: cls.$color-primary;
+      color: cls.$color-light;
+      border-radius: 0.75rem;
+      margin-bottom: 1rem;
+      font-weight: 500;
+
+      input {
+        display: none;
+      }
+
+      &:hover {
+        box-shadow: 0 0 15px cls.$color-primary;
+      }
+    }
+
+    .blankButton {
+      display: inline-block;
+      background: none;
+      color: cls.$color-text-dim;
+      border-color: cls.$color-text-dim;
+      border-radius: 0.75rem;
+      border-style: solid;
+      font-weight: 500;
+
+      &:hover {
+        background-color: cls.$color-secondary;
+        color: cls.$color-light;
+      }
+    }
+  }
+}
+
 #workspace {
+  position: absolute;
   width: $workspace-width;
   height: $workspace-height;
   background-color: cls.$color-dark;
+  z-index: 0;
 
   .toolBar,
   .bottomBar,
   .canvasWrapper {
-    position: fixed;
+    position: absolute;
     box-sizing: border-box;
   }
 

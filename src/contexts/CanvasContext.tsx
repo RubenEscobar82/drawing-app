@@ -2,12 +2,13 @@ import { createContext, RefObject, Dispatch, SetStateAction } from "react";
 import { DisplayCanvasConfig } from "@src/types";
 
 interface CanvasContextType {
-  defaultWidth: number;
-  defaultHeight: number;
+  defaultCanvasWidth: number;
+  defaultCanvasHeight: number;
   offscreenCanvasRef: RefObject<OffscreenCanvas>;
   displayCanvasRef: RefObject<HTMLCanvasElement | null>;
   displayCanvasConfig: DisplayCanvasConfig;
   setDisplayCanvasConfig: Dispatch<SetStateAction<DisplayCanvasConfig>>;
+  drawOnCanvasDisplay: (image: CanvasImageSource) => void;
 }
 
 const CanvasContext = createContext<CanvasContextType | undefined>(undefined);
