@@ -15,9 +15,9 @@ const CanvasProvider: FC<CanvasContextProviderProps> = ({ children }) => {
     useState<DisplayCanvasConfig>({
       canvasWidth: defaultCanvasWidth,
       canvasHeight: defaultCanvasHeight,
-      scale: 1,
       imgWidth: defaultCanvasWidth,
       imgHeight: defaultCanvasHeight,
+      scale: 1,
       offsetX: 0,
       offsetY: 0,
     });
@@ -25,21 +25,24 @@ const CanvasProvider: FC<CanvasContextProviderProps> = ({ children }) => {
   const offscreenCanvasRef = useRef(
     new OffscreenCanvas(defaultCanvasWidth, defaultCanvasHeight)
   );
+
   const displayCanvasRef = useRef<HTMLCanvasElement | null>(null);
 
   const drawOnCanvasDisplay = (image: CanvasImageSource) => {
-    getCanvasCtxFromRef({ ref: displayCanvasRef }, (ctx) => {
-      ctx.canvas.width = displayCanvasConfig.canvasWidth;
-      ctx.canvas.height = displayCanvasConfig.canvasHeight;
+    if (displayCanvasConfig) {
+      getCanvasCtxFromRef({ ref: displayCanvasRef }, (ctx) => {
+        ctx.canvas.width = displayCanvasConfig.canvasWidth;
+        ctx.canvas.height = displayCanvasConfig.canvasHeight;
 
-      ctx.imageSmoothingEnabled = false;
+        ctx.imageSmoothingEnabled = false;
 
-      clearCanvas(displayCanvasRef);
+        clearCanvas(displayCanvasRef);
 
-      ctx.translate(displayCanvasConfig.offsetX, displayCanvasConfig.offsetY);
-      ctx.scale(displayCanvasConfig.scale, displayCanvasConfig.scale);
-      ctx.drawImage(image, 0, 0);
-    });
+        ctx.translate(displayCanvasConfig.offsetX, displayCanvasConfig.offsetY);
+        ctx.scale(displayCanvasConfig.scale, displayCanvasConfig.scale);
+        ctx.drawImage(image, 0, 0);
+      });
+    }
   };
 
   return (

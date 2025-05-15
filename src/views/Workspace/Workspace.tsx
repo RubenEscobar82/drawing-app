@@ -1,24 +1,33 @@
 import { FC, ChangeEvent, useState } from "react";
 import { Canvas } from "@src/components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faUpload } from "@fortawesome/free-solid-svg-icons";
+import { faUpload, faHome } from "@fortawesome/free-solid-svg-icons";
+import { Step } from "@src/types";
 import styles from "./Workspace.module.scss";
 
 const Workspace: FC = () => {
+  const [currentStep, setCurrentStep] = useState<Step>(Step.SELECTING_IMAGE);
   const [imgSrc, setImgSrc] = useState<string | null>(null);
-  const [showSplash, setShowSplash] = useState(true);
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
       setImgSrc(URL.createObjectURL(file));
-      setShowSplash(false);
+      setCurrentStep(Step.DRAWING);
     }
   };
 
+  const toggleHome = () => setCurrentStep(Step.SELECTING_IMAGE);
+
+  const renderToggleHome = () => (
+    <div className={styles.toggleHome} onClick={toggleHome}>
+      <FontAwesomeIcon icon={faHome} />
+    </div>
+  );
+
   return (
     <>
-      {showSplash && (
+      {currentStep === Step.SELECTING_IMAGE && (
         <div id={styles.splash}>
           <div className={styles.splashContent}>
             <h1>Drawing App</h1>
@@ -32,7 +41,8 @@ const Workspace: FC = () => {
             <button
               className={styles.blankButton}
               onClick={() => {
-                setShowSplash(false);
+                setImgSrc(null);
+                setCurrentStep(Step.DRAWING);
               }}
             >
               From scratch
@@ -40,13 +50,15 @@ const Workspace: FC = () => {
           </div>
         </div>
       )}
-      <div id={styles.workspace}>
-        <div className={styles.toolBar}></div>
-        <div className={styles.canvasWrapper}>
-          <Canvas imgSrc={imgSrc} />
+      {currentStep === Step.DRAWING && (
+        <div id={styles.workspace}>
+          <div className={styles.toolBar}>{renderToggleHome()}</div>
+          <div className={styles.canvasWrapper}>
+            <Canvas imgSrc={imgSrc} />
+          </div>
+          <div className={styles.bottomBar}>{renderToggleHome()}</div>
         </div>
-        <div className={styles.bottomBar}></div>
-      </div>
+      )}
     </>
   );
 };

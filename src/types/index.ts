@@ -1,1 +1,2 @@
-export type { DisplayCanvasConfig } from "./DisplayCanvasConfig";
+export type { DisplayCanvasConfig } from "./Canvas";
+export { Step } from "./Workspace";

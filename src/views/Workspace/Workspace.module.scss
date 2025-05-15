@@ -102,8 +102,18 @@ $workspace-height: 100dvh;
   .toolBar,
   .bottomBar {
     display: flex;
-    padding: 0.5rem;
     background-color: cls.$color-primary-dark;
+    color: cls.$color-light;
+
+    .toggleHome {
+      width: $toolbar-size;
+      height: $toolbar-size;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+    }
   }
 
   .toolBar {
@@ -124,12 +134,20 @@ $workspace-height: 100dvh;
       right: 0;
       height: $toolbar-size;
       flex-direction: row;
+
+      .toggleHome {
+        display: none;
+      }
     }
 
     .bottomBar {
       top: 0;
       left: 0;
       width: $workspace-width;
+
+      .toggleHome {
+        display: flex;
+      }
     }
 
     .canvasWrapper {
@@ -151,12 +169,20 @@ $workspace-height: 100dvh;
       flex-direction: column;
       justify-content: flex-start;
       align-items: center;
+
+      .toggleHome {
+        display: flex;
+      }
     }
 
     .bottomBar {
       width: calc($workspace-width - $toolbar-size);
       bottom: 0;
       right: 0;
+
+      .toggleHome {
+        display: none;
+      }
     }
 
     .canvasWrapper {
