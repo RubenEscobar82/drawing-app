@@ -1,4 +1,4 @@
-import { RefObject } from "react";
+import { RefObject, MouseEvent, WheelEvent } from "react";
 
 type Rendering2DContext<T> = T extends OffscreenCanvas
   ? OffscreenCanvasRenderingContext2D
@@ -31,4 +31,17 @@ const getCanvasCtxFromRef = <T extends HTMLCanvasElement | OffscreenCanvas>(
   }
 };
 
-export { getCanvasCtxFromRef, clearCanvas };
+const getCanvasEvtPosition = (
+  event: WheelEvent<HTMLCanvasElement> | MouseEvent<HTMLElement>
+) => {
+  const canvasPosition = event.currentTarget.getBoundingClientRect();
+
+  const cursorPosition = {
+    x: event.clientX - canvasPosition.x,
+    y: event.clientY - canvasPosition.y,
+  };
+
+  return cursorPosition;
+};
+
+export { getCanvasCtxFromRef, clearCanvas, getCanvasEvtPosition };

@@ -6,4 +6,17 @@ const roundToTwoDecimals = (num: number, down?: boolean): number => {
   );
 };
 
-export { roundToTwoDecimals };
+const clampValue = (args: { min?: number; value: number; max?: number }) => {
+  const { min, max } = args;
+  let { value } = args;
+
+  if (min || min === 0) {
+    value = Math.max(min, value);
+  }
+  if (max || max === 0) {
+    value = Math.min(max, value);
+  }
+  return value;
+};
+
+export { roundToTwoDecimals, clampValue };

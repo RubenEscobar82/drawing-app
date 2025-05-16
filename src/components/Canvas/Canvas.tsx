@@ -1,7 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { FC, useEffect, useRef } from "react";
-import { useCanvasContext } from "@src/hooks";
-import { getCanvasCtxFromRef } from "@src/helpers";
+import { FC, useEffect, useRef, MouseEvent, WheelEvent } from "react";
+import { useCanvasContext, useZoom } from "@src/hooks";
+import { getCanvasCtxFromRef, getCanvasEvtPosition } from "@src/helpers";
+import { ZoomDirection } from "@src/types";
 import styles from "./Canvas.module.scss";
 
 interface canvasProps {
@@ -19,7 +20,23 @@ const Canvas: FC<canvasProps> = ({ imgSrc }) => {
     offscreenCanvasRef,
   } = useCanvasContext();
 
+  const { handleZoom } = useZoom();
+
   const displayCanvasWrapperRef = useRef<HTMLDivElement | null>(null);
+
+  const handleClick = (event: MouseEvent<HTMLCanvasElement>) => {
+    handleZoom({
+      direction: ZoomDirection.IN,
+      cursorPosition: getCanvasEvtPosition(event),
+    });
+  };
+
+  const handleWheel = (event: WheelEvent<HTMLCanvasElement>) => {
+    handleZoom({
+      direction: event.deltaY < 0 ? ZoomDirection.IN : ZoomDirection.OUT,
+      cursorPosition: getCanvasEvtPosition(event),
+    });
+  };
 
   const handleResize = () => {
     if (displayCanvasWrapperRef.current) {
@@ -89,6 +106,9 @@ const Canvas: FC<canvasProps> = ({ imgSrc }) => {
                 img.height > canvasHeight ? canvasHeight / img.height : 1;
               const scale = Math.min(scaleX, scaleY);
 
+              const offsetX = (canvasWidth - img.width * scale) / 2;
+              const offsetY = (canvasHeight - img.height * scale) / 2;
+
               return {
                 ...prev,
                 canvasWidth,
@@ -96,8 +116,8 @@ const Canvas: FC<canvasProps> = ({ imgSrc }) => {
                 imgWidth: img.width,
                 imgHeight: img.height,
                 scale,
-                offsetX: (canvasWidth - img.width * scale) / 2,
-                offsetY: (canvasHeight - img.height * scale) / 2,
+                offsetX,
+                offsetY,
               };
             });
           });
@@ -115,6 +135,9 @@ const Canvas: FC<canvasProps> = ({ imgSrc }) => {
           ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
           setDisplayCanvasConfig((prev) => {
+            const offsetX = (canvasWidth - ctx.canvas.width) / 2;
+            const offsetY = (canvasHeight - ctx.canvas.height) / 2;
+
             return {
               ...prev,
               canvasWidth,
@@ -122,8 +145,8 @@ const Canvas: FC<canvasProps> = ({ imgSrc }) => {
               imgWidth: ctx.canvas.width,
               imgHeight: ctx.canvas.height,
               scale: 1,
-              offsetX: (canvasWidth - ctx.canvas.width) / 2,
-              offsetY: (canvasHeight - ctx.canvas.height) / 2,
+              offsetX,
+              offsetY,
             };
           });
         });
@@ -147,7 +170,11 @@ const Canvas: FC<canvasProps> = ({ imgSrc }) => {
 
   return (
     <div className={styles.canvasContainer} ref={displayCanvasWrapperRef}>
-      <canvas ref={displayCanvasRef} />
+      <canvas
+        ref={displayCanvasRef}
+        onClick={handleClick}
+        onWheel={handleWheel}
+      />
     </div>
   );
 };

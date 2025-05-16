@@ -1,2 +1,6 @@
-export { clearCanvas, getCanvasCtxFromRef } from "./canvas";
-export { roundToTwoDecimals } from "./numbers";
+export {
+  clearCanvas,
+  getCanvasCtxFromRef,
+  getCanvasEvtPosition,
+} from "./canvas";
+export { roundToTwoDecimals, clampValue } from "./numbers";

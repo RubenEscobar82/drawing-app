@@ -7,3 +7,13 @@ export interface DisplayCanvasConfig {
   offsetX: number;
   offsetY: number;
 }
+
+export interface CursorPosition {
+  x: number;
+  y: number;
+}
+
+export enum ZoomDirection {
+  IN = "IN",
+  OUT = "OUT",
+}
