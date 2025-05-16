@@ -31,7 +31,7 @@ const useZoom = () => {
           clampValue({
             min: prev.canvasWidth - scaledImgWidth,
             value:
-              prev.canvasWidth / 2 -
+              arg.cursorPosition.x -
               ((arg.cursorPosition.x - prev.offsetX) / prev.scale) * scale,
             max: 0,
           })
@@ -44,7 +44,7 @@ const useZoom = () => {
           clampValue({
             min: prev.canvasHeight - scaledImgHeight,
             value:
-              prev.canvasHeight / 2 -
+              arg.cursorPosition.y -
               ((arg.cursorPosition.y - prev.offsetY) / prev.scale) * scale,
             max: 0,
           })
