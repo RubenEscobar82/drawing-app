@@ -1,8 +1,20 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { FC, useEffect, useRef, MouseEvent, WheelEvent } from "react";
+import {
+  FC,
+  useEffect,
+  useRef,
+  MouseEvent,
+  TouchEvent,
+  WheelEvent,
+} from "react";
 import { useCanvasContext, useZoom } from "@src/hooks";
-import { getCanvasCtxFromRef, getCanvasEvtPosition } from "@src/helpers";
-import { ZoomDirection } from "@src/types";
+import {
+  getCanvasCtxFromRef,
+  getCanvasEvtPosition,
+  getPinchDistance,
+  clampValue,
+} from "@src/helpers";
+import { CursorPosition } from "@src/types";
 import styles from "./Canvas.module.scss";
 
 interface canvasProps {
@@ -20,20 +32,99 @@ const Canvas: FC<canvasProps> = ({ imgSrc }) => {
     offscreenCanvasRef,
   } = useCanvasContext();
 
+  const magnifyingFactor = 1.1;
+  const reductionFactor = 0.8;
+
   const { handleZoom } = useZoom();
 
   const displayCanvasWrapperRef = useRef<HTMLDivElement | null>(null);
 
-  const handleClick = (event: MouseEvent<HTMLCanvasElement>) => {
-    handleZoom({
-      direction: ZoomDirection.IN,
-      cursorPosition: getCanvasEvtPosition(event),
-    });
+  const isPanning = useRef<boolean>(false);
+  const lastPinchDistance = useRef<number | null>(null);
+  const lastTouchPosition = useRef<CursorPosition>({ x: 0, y: 0 });
+  const firstPinchPosition = useRef<CursorPosition>({ x: 0, y: 0 });
+
+  const handleTouchStar = (event: TouchEvent<HTMLCanvasElement>) => {
+    if ("touches" in event) {
+      if (event.touches.length === 2) {
+        const distance = getPinchDistance(event.touches);
+        lastPinchDistance.current = distance;
+        firstPinchPosition.current = getCanvasEvtPosition(event);
+      } else if (event.touches.length === 1) {
+        isPanning.current = true;
+        lastTouchPosition.current = {
+          x: event.touches[0].clientX,
+          y: event.touches[0].clientY,
+        };
+      }
+    }
+  };
+
+  const handleTouchMove = (
+    event: MouseEvent<HTMLCanvasElement> | TouchEvent<HTMLCanvasElement>
+  ) => {
+    if ("touches" in event) {
+      if (event.touches.length == 2) {
+        const newDistance = getPinchDistance(event.touches);
+        if (lastPinchDistance.current !== null) {
+          const sensitivity = 0.005;
+          const diff = newDistance - lastPinchDistance.current;
+          handleZoom({
+            scale: displayCanvasConfig.scale + diff * sensitivity,
+            cursorPosition: firstPinchPosition.current,
+          });
+        }
+        lastPinchDistance.current = newDistance;
+      } else if (event.touches.length === 1) {
+        if (isPanning.current) {
+          const currentTouchPosition = {
+            x: event.touches[0].clientX,
+            y: event.touches[0].clientY,
+          };
+
+          const dx = currentTouchPosition.x - lastTouchPosition.current.x;
+          const dy = currentTouchPosition.y - lastTouchPosition.current.y;
+
+          lastTouchPosition.current = currentTouchPosition;
+
+          setDisplayCanvasConfig((prev) => {
+            const scaledImgWidth = prev.imgWidth * prev.scale;
+            const scaledImgHeight = prev.imgHeight * prev.scale;
+
+            return {
+              ...prev,
+              offsetX:
+                scaledImgWidth > prev.canvasWidth
+                  ? clampValue({
+                      min: prev.canvasWidth - scaledImgWidth,
+                      value: prev.offsetX + dx,
+                      max: 0,
+                    })
+                  : prev.offsetX,
+              offsetY:
+                scaledImgHeight > prev.canvasHeight
+                  ? clampValue({
+                      min: prev.canvasHeight - scaledImgHeight,
+                      value: prev.offsetY + dy,
+                      max: 0,
+                    })
+                  : prev.offsetY,
+            };
+          });
+        }
+      }
+    }
+  };
+
+  const handleTouchEnd = () => {
+    isPanning.current = false;
   };
 
   const handleWheel = (event: WheelEvent<HTMLCanvasElement>) => {
     handleZoom({
-      direction: event.deltaY < 0 ? ZoomDirection.IN : ZoomDirection.OUT,
+      scale:
+        displayCanvasConfig.scale *
+        (event.deltaY < 0 ? magnifyingFactor : reductionFactor),
       cursorPosition: getCanvasEvtPosition(event),
     });
   };
@@ -172,9 +263,17 @@ const Canvas: FC<canvasProps> = ({ imgSrc }) => {
     <div className={styles.canvasContainer} ref={displayCanvasWrapperRef}>
       <canvas
         ref={displayCanvasRef}
-        onClick={handleClick}
         onWheel={handleWheel}
+        onTouchStart={handleTouchStar}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
       />
+      <div id={styles.horizontalScrollHolder}>
+        <div id={styles.imageInfo}>
+          {displayCanvasConfig.imgWidth}x{displayCanvasConfig.imgHeight} px @{" "}
+          {Math.floor(displayCanvasConfig.scale * 100)}%
+        </div>
+      </div>
     </div>
   );
 };
