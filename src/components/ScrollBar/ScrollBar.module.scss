@@ -7,10 +7,12 @@ $thumbSize: 12px;
   background-color: transparent;
   position: relative;
   flex: 1;
+  touch-action: none;
   .thumb {
     background-color: cls.$color-secondary;
     position: absolute;
     border-radius: 6px;
+    touch-action: none;
   }
 }
 
