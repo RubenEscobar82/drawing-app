@@ -7,6 +7,7 @@ import {
   TouchEvent,
   WheelEvent,
 } from "react";
+import { ScrollBar } from "@src/components";
 import { useCanvasContext, useZoom } from "@src/hooks";
 import {
   getCanvasCtxFromRef,
@@ -116,6 +117,9 @@ const Canvas: FC<canvasProps> = ({ imgSrc }) => {
     }
   };
 
+  const getFormattedScale = () =>
+    `${Math.floor(displayCanvasConfig.scale * 100)}%`;
+
   const handleTouchEnd = () => {
     isPanning.current = false;
   };
@@ -127,6 +131,23 @@ const Canvas: FC<canvasProps> = ({ imgSrc }) => {
         (event.deltaY < 0 ? magnifyingFactor : reductionFactor),
       cursorPosition: getCanvasEvtPosition(event),
     });
+  };
+
+  const handleScrollPositionUpdate = (
+    horizontal: boolean,
+    scrollPosition: number
+  ) => {
+    if (horizontal) {
+      setDisplayCanvasConfig((prev) => {
+        const offsetX = -1 * scrollPosition;
+        return { ...prev, offsetX };
+      });
+    } else {
+      setDisplayCanvasConfig((prev) => {
+        const offsetY = -1 * scrollPosition;
+        return { ...prev, offsetY };
+      });
+    }
   };
 
   const handleResize = () => {
@@ -268,11 +289,33 @@ const Canvas: FC<canvasProps> = ({ imgSrc }) => {
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
       />
-      <div id={styles.horizontalScrollHolder}>
+      <div id={styles.imageInfoContainer}>
         <div id={styles.imageInfo}>
-          {displayCanvasConfig.imgWidth}x{displayCanvasConfig.imgHeight} px @{" "}
-          {Math.floor(displayCanvasConfig.scale * 100)}%
+          {displayCanvasConfig.imgWidth} x {displayCanvasConfig.imgHeight} px @{" "}
+          {getFormattedScale()}
         </div>
+        <div id={styles.horizontalScrollHolder}>
+          <ScrollBar
+            horizontal={true}
+            contentLength={
+              displayCanvasConfig.imgWidth * displayCanvasConfig.scale
+            }
+            displayedContentLength={displayCanvasConfig.canvasWidth}
+            defaultScrollPosition={-1 * displayCanvasConfig.offsetX}
+            onScroll={handleScrollPositionUpdate}
+          />
+        </div>
+        <div id={styles.spacer} />
+      </div>
+      <div id={styles.verticalScrollHolder}>
+        <ScrollBar
+          contentLength={
+            displayCanvasConfig.imgHeight * displayCanvasConfig.scale
+          }
+          displayedContentLength={displayCanvasConfig.canvasHeight}
+          defaultScrollPosition={-1 * displayCanvasConfig.offsetY}
+          onScroll={handleScrollPositionUpdate}
+        ></ScrollBar>
       </div>
     </div>
   );

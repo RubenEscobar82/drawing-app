@@ -1,0 +1,32 @@
+@use "@src/styles/abstracts/colors" as cls;
+
+$thumbSize: 12px;
+
+.scrollBarHorizontal,
+.scrollBarVertical {
+  background-color: transparent;
+  position: relative;
+  flex: 1;
+  .thumb {
+    background-color: cls.$color-secondary;
+    position: absolute;
+    border-radius: 6px;
+  }
+}
+
+.scrollBarHorizontal {
+  height: $thumbSize;
+
+  .thumb {
+    height: 100%;
+  }
+}
+
+.scrollBarVertical {
+  width: $thumbSize;
+  height: 100%;
+
+  .thumb {
+    width: 100%;
+  }
+}

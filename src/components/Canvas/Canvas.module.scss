@@ -1,4 +1,5 @@
 $scrollHolderSize: 16px;
+$imageInfoWidth: 160px;
 
 .canvasContainer {
   width: 100%;
@@ -11,22 +12,45 @@ $scrollHolderSize: 16px;
     touch-action: none;
   }
 
-  #horizontalScrollHolder {
-    height: $scrollHolderSize;
+  #imageInfoContainer {
     width: 100%;
+    height: $scrollHolderSize;
     position: absolute;
+    display: flex;
     bottom: 0;
     left: 0;
 
     #imageInfo {
-      background-color: rgba(0, 0, 0, 0.4);
       color: #fff;
       font-size: 10px;
-      height: 16px;
-      line-height: 16px;
-      position: absolute;
-      text-align: center;
-      width: 160px;
+      height: $scrollHolderSize;
+      width: $imageInfoWidth;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
+
+    #horizontalScrollHolder {
+      height: $scrollHolderSize;
+      flex: 1;
+    }
+
+    #spacer {
+      width: $scrollHolderSize;
+      height: $scrollHolderSize;
+    }
+
+    #imageInfo,
+    #spacer {
+      background-color: rgba(0, 0, 0, 0.4);
+    }
+  }
+
+  #verticalScrollHolder {
+    width: $scrollHolderSize;
+    height: calc(100% - $scrollHolderSize);
+    position: absolute;
+    top: 0;
+    right: 0;
   }
 }
