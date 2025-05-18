@@ -301,7 +301,7 @@ const Canvas: FC<canvasProps> = ({ imgSrc }) => {
               displayCanvasConfig.imgWidth * displayCanvasConfig.scale
             }
             displayedContentLength={displayCanvasConfig.canvasWidth}
-            defaultScrollPosition={-1 * displayCanvasConfig.offsetX}
+            scrollPosition={-1 * displayCanvasConfig.offsetX}
             onScroll={handleScrollPositionUpdate}
           />
         </div>
@@ -313,7 +313,7 @@ const Canvas: FC<canvasProps> = ({ imgSrc }) => {
             displayCanvasConfig.imgHeight * displayCanvasConfig.scale
           }
           displayedContentLength={displayCanvasConfig.canvasHeight}
-          defaultScrollPosition={-1 * displayCanvasConfig.offsetY}
+          scrollPosition={-1 * displayCanvasConfig.offsetY}
           onScroll={handleScrollPositionUpdate}
         ></ScrollBar>
       </div>

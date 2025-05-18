@@ -1,10 +1,10 @@
-import { FC, MouseEvent, useEffect, useRef, useState } from "react";
+import { FC, MouseEvent, TouchEvent, useRef } from "react";
 import { clampValue } from "@src/helpers";
 import styles from "./ScrollBar.module.scss";
 
 interface ScrollBarProps {
   horizontal?: boolean;
-  defaultScrollPosition?: number;
+  scrollPosition?: number;
   contentLength: number;
   displayedContentLength: number;
   onScroll: (horizontal: boolean, newPosition: number) => void;
@@ -12,7 +12,7 @@ interface ScrollBarProps {
 
 const ScrollBar: FC<ScrollBarProps> = ({
   horizontal = false,
-  defaultScrollPosition,
+  scrollPosition = 0,
   contentLength,
   displayedContentLength,
   onScroll,
@@ -46,15 +46,42 @@ const ScrollBar: FC<ScrollBarProps> = ({
     });
   };
 
-  const [scrollPosition, setScrollPosition] = useState(
-    convertScroll(defaultScrollPosition || 0)
-  );
+  const handleTouchStar = (event: TouchEvent<HTMLDivElement>) => {
+    const startY = event.touches[0].clientY;
+    const startX = event.touches[0].clientX;
+    const startScroll = convertScroll(scrollPosition);
 
-  const handleThumbDrag = (event: MouseEvent) => {
+    const getDelta = (evt: globalThis.TouchEvent) =>
+      horizontal
+        ? evt.touches[0].clientX - startX
+        : evt.touches[0].clientY - startY;
+
+    const onTouchMove = (evt: globalThis.TouchEvent) => {
+      const delta = getDelta(evt);
+      const newScroll = clampValue({
+        min: 0,
+        value: startScroll + delta,
+        max: getScrollBarLength() - getThumbLength(),
+      });
+      onScroll(horizontal, (newScroll / getScrollBarLength()) * contentLength);
+    };
+
+    const onTouchEnd = () => {
+      window.removeEventListener("touchmove", onTouchMove);
+      window.removeEventListener("touchend", onTouchEnd);
+    };
+
+    window.addEventListener("touchmove", onTouchMove);
+    window.addEventListener("touchend", onTouchEnd);
+
+    event.stopPropagation();
+  };
+
+  const handleMouseDown = (event: MouseEvent) => {
     event.preventDefault();
     const startY = event.clientY;
     const startX = event.clientX;
-    const startScroll = scrollPosition;
+    const startScroll = convertScroll(scrollPosition);
 
     const getDelta = (evt: globalThis.MouseEvent) =>
       horizontal ? evt.clientX - startX : evt.clientY - startY;
@@ -66,7 +93,6 @@ const ScrollBar: FC<ScrollBarProps> = ({
         value: startScroll + delta,
         max: getScrollBarLength() - getThumbLength(),
       });
-      setScrollPosition(newScroll);
       onScroll(horizontal, (newScroll / getScrollBarLength()) * contentLength);
     };
 
@@ -88,7 +114,7 @@ const ScrollBar: FC<ScrollBarProps> = ({
         top: "0px",
         left: `${clampValue({
           min: 0,
-          value: scrollPosition,
+          value: convertScroll(scrollPosition),
           max: getScrollBarLength() - getThumbLength(),
         })}px`,
       };
@@ -97,7 +123,7 @@ const ScrollBar: FC<ScrollBarProps> = ({
         height: `${getThumbLength()}px`,
         top: `${clampValue({
           min: 0,
-          value: scrollPosition,
+          value: convertScroll(scrollPosition),
           max: getScrollBarLength() - getThumbLength(),
         })}px`,
         left: "0px",
@@ -115,7 +141,6 @@ const ScrollBar: FC<ScrollBarProps> = ({
       value: getClickLocation() - getThumbLength() / 2,
       max: getScrollBarLength() - getThumbLength(),
     });
-    setScrollPosition(newScroll);
     onScroll(horizontal, (newScroll / getScrollBarLength()) * contentLength);
   };
 
@@ -123,12 +148,6 @@ const ScrollBar: FC<ScrollBarProps> = ({
     event.preventDefault();
     event.stopPropagation();
   };
-
-  useEffect(() => {
-    if (defaultScrollPosition) {
-      setScrollPosition(convertScroll(defaultScrollPosition));
-    }
-  }, [defaultScrollPosition]);
 
   return (
     <>
@@ -144,8 +163,9 @@ const ScrollBar: FC<ScrollBarProps> = ({
             ref={thumbRef}
             className={styles.thumb}
             style={getThumbDimensionsStyles()}
-            onMouseDown={handleThumbDrag}
             onClick={handleClickOnThumb}
+            onMouseDown={handleMouseDown}
+            onTouchStart={handleTouchStar}
           ></div>
         </div>
       )}
