@@ -1,13 +1,23 @@
 import { FC, ChangeEvent, useState } from "react";
 import { Canvas } from "@src/components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faUpload, faHome } from "@fortawesome/free-solid-svg-icons";
+import {
+  faUpload,
+  faHome,
+  faMagnifyingGlassPlus,
+  faMagnifyingGlassMinus,
+} from "@fortawesome/free-solid-svg-icons";
+import { useCanvasContext, useZoom } from "@src/hooks";
+import { float2Percentage } from "@src/helpers";
 import { Step } from "@src/types";
 import styles from "./Workspace.module.scss";
 
 const Workspace: FC = () => {
   const [currentStep, setCurrentStep] = useState<Step>(Step.SELECTING_IMAGE);
   const [imgSrc, setImgSrc] = useState<string | null>(null);
+
+  const { displayCanvasConfig } = useCanvasContext();
+  const { handleZoom } = useZoom();
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -56,7 +66,30 @@ const Workspace: FC = () => {
           <div className={styles.canvasWrapper}>
             <Canvas imgSrc={imgSrc} />
           </div>
-          <div className={styles.bottomBar}>{renderToggleHome()}</div>
+          <div className={styles.bottomBar}>
+            {renderToggleHome()}
+            <div id={styles.zoom}>
+              <div
+                className={styles.zoomButton}
+                onClick={() =>
+                  handleZoom({ scale: displayCanvasConfig.scale * 0.8 })
+                }
+              >
+                <FontAwesomeIcon icon={faMagnifyingGlassMinus} />
+              </div>
+              <div id={styles.zoomLevel}>
+                {float2Percentage(displayCanvasConfig.scale)}
+              </div>
+              <div
+                className={styles.zoomButton}
+                onClick={() =>
+                  handleZoom({ scale: displayCanvasConfig.scale * 1.1 })
+                }
+              >
+                <FontAwesomeIcon icon={faMagnifyingGlassPlus} />
+              </div>
+            </div>
+          </div>
         </div>
       )}
     </>

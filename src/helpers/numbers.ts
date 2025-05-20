@@ -19,4 +19,6 @@ const clampValue = (args: { min?: number; value: number; max?: number }) => {
   return value;
 };
 
-export { roundToTwoDecimals, clampValue };
+const float2Percentage = (input: number) => `${Math.floor(input * 100)}%`;
+
+export { roundToTwoDecimals, clampValue, float2Percentage };

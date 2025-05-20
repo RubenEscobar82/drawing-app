@@ -4,4 +4,4 @@ export {
   getCanvasEvtPosition,
   getPinchDistance,
 } from "./canvas";
-export { roundToTwoDecimals, clampValue } from "./numbers";
+export { roundToTwoDecimals, clampValue, float2Percentage } from "./numbers";

@@ -1,9 +1,9 @@
-@use "@src/styles/abstracts/colors" as cls;
+@use "@src/styles/abstracts/colors" as *;
 @use "@src/styles/abstracts/breakpoints" as bps;
 @use "@src/styles/abstracts/mixins" as mxs;
 
 $toolbar-size: 60px;
-$bottom-bar-size: 60px;
+$bottom-bar-size: 50px;
 $workspace-width: 100dvw;
 $workspace-height: 100dvh;
 
@@ -13,22 +13,22 @@ $workspace-height: 100dvh;
   min-width: 350px;
   height: $workspace-height;
   min-height: 300px;
-  background-color: cls.$color-primary-dark;
+  background-color: $color-primary-dark;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 2rem;
   box-sizing: border-box;
-  background: cls.$color-primary-dark;
+  background: $color-primary-dark;
   overflow: auto;
   z-index: 1;
 
   .splashContent {
-    background-color: cls.$color-primary-dark;
+    background-color: $color-primary-dark;
     padding: 2.5rem;
     border-radius: 1.5rem;
     border-style: dotted;
-    border-color: cls.$color-secondary;
+    border-color: $color-secondary;
     max-width: 400px;
     width: 100%;
     text-align: center;
@@ -36,11 +36,11 @@ $workspace-height: 100dvh;
     h1 {
       font-size: 1.8rem;
       margin-bottom: 0.5rem;
-      color: cls.$color-light;
+      color: $color-light;
     }
 
     p {
-      color: cls.$color-text-dim;
+      color: $color-text-dim;
       margin-bottom: 2rem;
     }
 
@@ -53,8 +53,8 @@ $workspace-height: 100dvh;
 
     .fileUpload {
       display: block;
-      background-color: cls.$color-primary;
-      color: cls.$color-light;
+      background-color: $color-primary;
+      color: $color-light;
       border-radius: 0.75rem;
       margin-bottom: 1rem;
       font-weight: 500;
@@ -64,22 +64,22 @@ $workspace-height: 100dvh;
       }
 
       &:hover {
-        box-shadow: 0 0 15px cls.$color-primary;
+        box-shadow: 0 0 15px $color-primary;
       }
     }
 
     .blankButton {
       display: inline-block;
       background: none;
-      color: cls.$color-text-dim;
-      border-color: cls.$color-text-dim;
+      color: $color-text-dim;
+      border-color: $color-text-dim;
       border-radius: 0.75rem;
       border-style: solid;
       font-weight: 500;
 
       &:hover {
-        background-color: cls.$color-secondary;
-        color: cls.$color-light;
+        background-color: $color-secondary;
+        color: $color-light;
       }
     }
   }
@@ -89,7 +89,7 @@ $workspace-height: 100dvh;
   position: absolute;
   width: $workspace-width;
   height: $workspace-height;
-  background-color: cls.$color-dark;
+  background-color: $color-dark;
   z-index: 0;
 
   .toolBar,
@@ -102,8 +102,9 @@ $workspace-height: 100dvh;
   .toolBar,
   .bottomBar {
     display: flex;
-    background-color: cls.$color-primary-dark;
-    color: cls.$color-light;
+    align-items: center;
+    background-color: $color-primary-dark;
+    color: $color-light;
 
     .toggleHome {
       width: $toolbar-size;
@@ -113,6 +114,53 @@ $workspace-height: 100dvh;
       align-items: center;
       justify-content: center;
       font-size: 1.5rem;
+    }
+
+    #zoom,
+    #history,
+    #file {
+      align-items: center;
+      border-left: 2px solid var($color-secondary);
+      display: flex;
+      flex-direction: row;
+      height: 28px;
+      margin-left: 25px;
+      padding-left: 25px;
+    }
+
+    #zoom {
+      #zoomLevel {
+        width: 60px;
+        height: 28px;
+        border-radius: 4px;
+        color: $color-text-dim;
+        cursor: pointer;
+        font-weight: 700;
+        line-height: 28px;
+        text-align: center;
+        transition: all 0.15s linear;
+      }
+      .zoomButton {
+        width: 28px;
+        height: 28px;
+        cursor: pointer;
+        border-radius: 4px;
+        color: $color-text-dim;
+        position: relative;
+        transition: all 0.15s linear;
+        padding: 6px;
+        opacity: 0.5;
+        box-sizing: border-box;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        user-select: none;
+
+        &:hover {
+          color: $color-white;
+          background-color: $color-secondary;
+        }
+      }
     }
   }
 
@@ -147,6 +195,10 @@ $workspace-height: 100dvh;
 
       .toggleHome {
         display: flex;
+      }
+
+      #zoom {
+        display: none;
       }
     }
 

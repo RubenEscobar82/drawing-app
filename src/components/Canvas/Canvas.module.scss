@@ -10,6 +10,7 @@ $imageInfoWidth: 160px;
 
   canvas {
     touch-action: none;
+    user-select: none;
   }
 
   #imageInfoContainer {
@@ -33,6 +34,7 @@ $imageInfoWidth: 160px;
     #horizontalScrollHolder {
       height: $scrollHolderSize;
       flex: 1;
+      user-select: none;
     }
 
     #spacer {
@@ -52,5 +54,6 @@ $imageInfoWidth: 160px;
     position: absolute;
     top: 0;
     right: 0;
+    user-select: none;
   }
 }

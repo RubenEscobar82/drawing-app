@@ -23,7 +23,7 @@ const useZoom = () => {
 
   const handleZoom = (arg: {
     scale: number;
-    cursorPosition: CursorPosition;
+    cursorPosition?: CursorPosition;
   }) => {
     const newScale = clampValue({
       min: minScale.current,
@@ -37,7 +37,7 @@ const useZoom = () => {
       let offsetX = 0;
       let offsetY = 0;
 
-      if (scaledImgWidth <= prev.canvasWidth) {
+      if (!arg.cursorPosition || scaledImgWidth <= prev.canvasWidth) {
         offsetX = Math.floor((prev.canvasWidth - scaledImgWidth) / 2);
       } else {
         offsetX = Math.floor(
@@ -50,7 +50,7 @@ const useZoom = () => {
           })
         );
       }
-      if (scaledImgHeight <= prev.canvasHeight) {
+      if (!arg.cursorPosition || scaledImgHeight <= prev.canvasHeight) {
         offsetY = Math.floor((prev.canvasHeight - scaledImgHeight) / 2);
       } else {
         offsetY = Math.floor(

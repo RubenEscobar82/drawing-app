@@ -14,6 +14,7 @@ import {
   getCanvasEvtPosition,
   getPinchDistance,
   clampValue,
+  float2Percentage,
 } from "@src/helpers";
 import { CursorPosition } from "@src/types";
 import styles from "./Canvas.module.scss";
@@ -116,9 +117,6 @@ const Canvas: FC<canvasProps> = ({ imgSrc }) => {
       }
     }
   };
-
-  const getFormattedScale = () =>
-    `${Math.floor(displayCanvasConfig.scale * 100)}%`;
 
   const handleTouchEnd = () => {
     isPanning.current = false;
@@ -292,7 +290,7 @@ const Canvas: FC<canvasProps> = ({ imgSrc }) => {
       <div id={styles.imageInfoContainer}>
         <div id={styles.imageInfo}>
           {displayCanvasConfig.imgWidth} x {displayCanvasConfig.imgHeight} px @{" "}
-          {getFormattedScale()}
+          {float2Percentage(displayCanvasConfig.scale)}
         </div>
         <div id={styles.horizontalScrollHolder}>
           <ScrollBar
