@@ -2,16 +2,14 @@
 @use "@src/styles/abstracts/breakpoints" as bps;
 @use "@src/styles/abstracts/mixins" as mxs;
 
-$toolbar-size: 60px;
-$bottom-bar-size: 50px;
-$workspace-width: 100dvw;
-$workspace-height: 100dvh;
+$workspaceWidth: 100dvw;
+$workspaceHeight: 100dvh;
 
 #splash {
   position: absolute;
-  width: $workspace-width;
+  width: $workspaceWidth;
   min-width: 350px;
-  height: $workspace-height;
+  height: $workspaceHeight;
   min-height: 300px;
   background-color: $color-primary-dark;
   display: flex;
@@ -86,41 +84,75 @@ $workspace-height: 100dvh;
 }
 
 #workspace {
-  position: absolute;
-  width: $workspace-width;
-  height: $workspace-height;
+  $toggleHomeSize: 60px;
+
+  width: $workspaceWidth;
+  height: $workspaceHeight;
   background-color: $color-dark;
-  z-index: 0;
+  $toolButtonsSize: 44px;
 
-  .toolBar,
-  .bottomBar,
-  .canvasWrapper {
-    position: absolute;
-    box-sizing: border-box;
-  }
-
-  .toolBar,
-  .bottomBar {
+  .toggleHome {
+    cursor: pointer;
     display: flex;
     align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+  }
+
+  #sideBar {
+    background-color: $color-primary-dark;
+    color: $color-light;
+
+    #menu {
+      ul,
+      ol {
+        list-style: none;
+        list-style-image: none;
+        margin: 0;
+        padding: 0;
+      }
+
+      .toggleHome {
+        width: $toggleHomeSize;
+        height: $toggleHomeSize;
+      }
+
+      #toolMenu {
+        .tool {
+          width: $toolButtonsSize;
+          height: $toolButtonsSize;
+          align-items: center;
+          border-radius: 8px;
+          cursor: pointer;
+          display: flex;
+          justify-content: center;
+          margin: auto;
+          position: relative;
+          color: $color-text-dim;
+
+          &:hover,
+          &.active {
+            background-color: $color-secondary;
+            color: $color-light;
+          }
+        }
+      }
+    }
+  }
+  #bottomBar {
     background-color: $color-primary-dark;
     color: $color-light;
 
     .toggleHome {
-      width: $toolbar-size;
-      height: $toolbar-size;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.5rem;
+      width: 50px;
+      height: 50px;
     }
 
     #zoom,
     #history,
     #file {
       align-items: center;
-      border-left: 2px solid var($color-secondary);
+      border-left: 2px solid $color-secondary;
       display: flex;
       flex-direction: row;
       height: 28px;
@@ -129,9 +161,11 @@ $workspace-height: 100dvh;
     }
 
     #zoom {
+      $zoomButtonHeight: 28px;
+
       #zoomLevel {
         width: 60px;
-        height: 28px;
+        height: $zoomButtonHeight;
         border-radius: 4px;
         color: $color-text-dim;
         cursor: pointer;
@@ -141,8 +175,8 @@ $workspace-height: 100dvh;
         transition: all 0.15s linear;
       }
       .zoomButton {
-        width: 28px;
-        height: 28px;
+        width: $zoomButtonHeight;
+        height: $zoomButtonHeight;
         cursor: pointer;
         border-radius: 4px;
         color: $color-text-dim;
@@ -164,34 +198,56 @@ $workspace-height: 100dvh;
     }
   }
 
-  .toolBar {
-    gap: 0.5rem;
-    justify-content: space-around;
-    align-items: center;
-  }
-
-  .bottomBar {
-    height: $bottom-bar-size;
-  }
-
   // For small screens
   @include mxs.respond-down(bps.$breakpoint-md) {
-    .toolBar {
-      bottom: 0;
-      left: 0;
-      right: 0;
-      height: $toolbar-size;
-      flex-direction: row;
+    $sideBarHeight: 50px;
+    $collapseHeight: 200px;
 
-      .toggleHome {
-        display: none;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: $sideBarHeight 1fr auto;
+
+    #sideBar {
+      grid-column: 1;
+      grid-row: 3;
+      display: flex;
+      flex-flow: column-reverse;
+
+      #menu {
+        width: 100%;
+        height: $sideBarHeight;
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        overflow: auto;
+
+        #toolMenu {
+          display: flex;
+          flex-direction: row;
+          gap: 5px 5px;
+          margin: 0 8px;
+        }
+
+        .toggleHome {
+          display: none;
+        }
+      }
+
+      #collapse {
+        height: $collapseHeight;
+        width: 100%;
       }
     }
 
-    .bottomBar {
-      top: 0;
-      left: 0;
-      width: $workspace-width;
+    #main {
+      grid-column: 1;
+      grid-row: 2;
+      overflow: hidden;
+    }
+
+    #bottomBar {
+      grid-column: 1;
+      grid-row: 1;
 
       .toggleHome {
         display: flex;
@@ -201,47 +257,51 @@ $workspace-height: 100dvh;
         display: none;
       }
     }
-
-    .canvasWrapper {
-      width: $workspace-width;
-      height: calc($workspace-height - $toolbar-size - $bottom-bar-size);
-      left: 0;
-      top: $bottom-bar-size;
-    }
   }
 
   // For big screens
   @include mxs.respond-up(bps.$breakpoint-md) {
-    .toolBar {
-      top: 0;
-      bottom: 0;
-      left: 0;
-      width: $toolbar-size;
-      height: $workspace-height;
-      flex-direction: column;
-      justify-content: flex-start;
-      align-items: center;
+    $bottomBarHeight: 50px;
+    $collapseWidth: 320px;
+    $toolMenuWidth: 60px;
 
-      .toggleHome {
-        display: flex;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-template-rows: 1fr $bottomBarHeight;
+
+    #sideBar {
+      grid-column: 1;
+      grid-row: 1;
+      display: flex;
+      flex-flow: row;
+
+      #menu {
+        width: $toolMenuWidth;
+        height: 100%;
+      }
+
+      #collapse {
+        width: $collapseWidth;
+        height: 100%;
       }
     }
 
-    .bottomBar {
-      width: calc($workspace-width - $toolbar-size);
-      bottom: 0;
-      right: 0;
+    #main {
+      grid-column: 2;
+      grid-row: 1;
+      overflow: hidden;
+    }
+
+    #bottomBar {
+      grid-column: 1/3;
+      grid-row: 2;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
 
       .toggleHome {
         display: none;
       }
-    }
-
-    .canvasWrapper {
-      width: calc($workspace-width - $toolbar-size);
-      height: calc($workspace-height - $bottom-bar-size);
-      left: $toolbar-size;
-      top: 0;
     }
   }
 }

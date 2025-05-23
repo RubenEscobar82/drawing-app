@@ -17,7 +17,7 @@ import {
   float2Percentage,
 } from "@src/helpers";
 import { CursorPosition } from "@src/types";
-import styles from "./Canvas.module.scss";
+import "./Canvas.scss";
 
 interface canvasProps {
   imgSrc?: string | null;
@@ -271,28 +271,33 @@ const Canvas: FC<canvasProps> = ({ imgSrc }) => {
   }, [displayCanvasConfig]);
 
   useEffect(() => {
-    window.addEventListener("resize", handleResize);
+    const observer = new ResizeObserver((entries) => {
+      entries.forEach(handleResize);
+    });
 
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
+    if (displayCanvasWrapperRef.current) {
+      observer.observe(displayCanvasWrapperRef.current);
+    }
+
+    return () => observer.disconnect();
   }, []);
 
   return (
-    <div className={styles.canvasContainer} ref={displayCanvasWrapperRef}>
+    <div className="canvasWrapper" ref={displayCanvasWrapperRef}>
       <canvas
+        id="displayCanvas"
         ref={displayCanvasRef}
         onWheel={handleWheel}
         onTouchStart={handleTouchStar}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
       />
-      <div id={styles.imageInfoContainer}>
-        <div id={styles.imageInfo}>
+      <div id="imageInfoContainer">
+        <div id="imageInfo">
           {displayCanvasConfig.imgWidth} x {displayCanvasConfig.imgHeight} px @{" "}
           {float2Percentage(displayCanvasConfig.scale)}
         </div>
-        <div id={styles.horizontalScrollHolder}>
+        <div id="horizontalScrollHolder">
           <ScrollBar
             horizontal={true}
             contentLength={
@@ -303,9 +308,9 @@ const Canvas: FC<canvasProps> = ({ imgSrc }) => {
             onScroll={handleScrollPositionUpdate}
           />
         </div>
-        <div id={styles.spacer} />
+        <div id="spacer" />
       </div>
-      <div id={styles.verticalScrollHolder}>
+      <div id="verticalScrollHolder">
         <ScrollBar
           contentLength={
             displayCanvasConfig.imgHeight * displayCanvasConfig.scale
