@@ -139,6 +139,7 @@ $workspaceHeight: 100dvh;
       }
     }
   }
+
   #bottomBar {
     background-color: $color-primary-dark;
     color: $color-light;
@@ -204,7 +205,7 @@ $workspaceHeight: 100dvh;
     $collapseHeight: 200px;
 
     display: grid;
-    grid-template-columns: 1fr;
+    grid-template-columns: $workspaceWidth;
     grid-template-rows: $sideBarHeight 1fr auto;
 
     #sideBar {
@@ -267,7 +268,7 @@ $workspaceHeight: 100dvh;
 
     display: grid;
     grid-template-columns: auto 1fr;
-    grid-template-rows: 1fr $bottomBarHeight;
+    grid-template-rows: calc($workspaceHeight - $bottomBarHeight) $bottomBarHeight;
 
     #sideBar {
       grid-column: 1;
@@ -283,6 +284,9 @@ $workspaceHeight: 100dvh;
       #collapse {
         width: $collapseWidth;
         height: 100%;
+        box-sizing: border-box;
+        border-left: 1px solid $color-dark;
+        border-bottom: 1px solid $color-dark;
       }
     }
 

@@ -1,5 +1,5 @@
 import { FC, ChangeEvent, useState } from "react";
-import { Canvas } from "@src/components";
+import { Canvas, ScrollableWrapper } from "@src/components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faUpload,
@@ -77,7 +77,11 @@ const Workspace: FC = () => {
                 </li>
               </ul>
             </div>
-            {showToolDrawer && <div id="collapse"></div>}
+            {showToolDrawer && (
+              <div id="collapse">
+                <ScrollableWrapper></ScrollableWrapper>
+              </div>
+            )}
           </div>
           <div id="main">
             <Canvas imgSrc={imgSrc} />

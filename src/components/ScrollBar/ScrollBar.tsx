@@ -1,6 +1,6 @@
-import { FC, MouseEvent, TouchEvent, useRef } from "react";
+import { FC, MouseEvent, TouchEvent, useRef, useEffect, useState } from "react";
 import { clampValue } from "@src/helpers";
-import styles from "./ScrollBar.module.scss";
+import "./ScrollBar.scss";
 
 interface ScrollBarProps {
   horizontal?: boolean;
@@ -8,6 +8,8 @@ interface ScrollBarProps {
   contentLength: number;
   displayedContentLength: number;
   onScroll: (horizontal: boolean, newPosition: number) => void;
+  onIsDragging?: (isDragging: boolean) => void;
+  className?: string;
 }
 
 const ScrollBar: FC<ScrollBarProps> = ({
@@ -16,37 +18,28 @@ const ScrollBar: FC<ScrollBarProps> = ({
   contentLength,
   displayedContentLength,
   onScroll,
+  onIsDragging,
+  className,
 }) => {
+  const [scrollbarLength, setScrollBarLength] = useState(0);
+  const [thumbLength, setThumbLength] = useState(0);
   const scrollBarRef = useRef<HTMLDivElement>(null);
   const thumbRef = useRef<HTMLDivElement>(null);
-
-  const getScrollBarLength = () => {
-    let length = 0;
-    if (scrollBarRef.current) {
-      if (horizontal) {
-        length = scrollBarRef.current.clientWidth;
-      } else {
-        length = scrollBarRef.current.clientHeight;
-      }
-    }
-    return length;
-  };
-
-  const getThumbLength = () => {
-    return (displayedContentLength / contentLength) * getScrollBarLength();
-  };
+  const [isDragging, setIsDragging] = useState(false);
 
   const convertScroll = (outerScroll: number) => {
-    const innerScroll = (outerScroll / contentLength) * getScrollBarLength();
+    const innerScroll = (outerScroll / contentLength) * scrollbarLength;
 
     return clampValue({
       min: 0,
       value: innerScroll,
-      max: getScrollBarLength() - getThumbLength(),
+      max: scrollbarLength - thumbLength,
     });
   };
 
   const handleTouchStar = (event: TouchEvent<HTMLDivElement>) => {
+    setIsDragging(true);
+
     const startY = event.touches[0].clientY;
     const startX = event.touches[0].clientX;
     const startScroll = convertScroll(scrollPosition);
@@ -61,12 +54,14 @@ const ScrollBar: FC<ScrollBarProps> = ({
       const newScroll = clampValue({
         min: 0,
         value: startScroll + delta,
-        max: getScrollBarLength() - getThumbLength(),
+        max: scrollbarLength - thumbLength,
       });
-      onScroll(horizontal, (newScroll / getScrollBarLength()) * contentLength);
+      onScroll(horizontal, (newScroll / scrollbarLength) * contentLength);
     };
 
     const onTouchEnd = () => {
+      setIsDragging(false);
+
       window.removeEventListener("touchmove", onTouchMove);
       window.removeEventListener("touchend", onTouchEnd);
     };
@@ -78,6 +73,8 @@ const ScrollBar: FC<ScrollBarProps> = ({
   };
 
   const handleMouseDown = (event: MouseEvent) => {
+    setIsDragging(true);
+
     event.preventDefault();
     const startY = event.clientY;
     const startX = event.clientX;
@@ -91,12 +88,13 @@ const ScrollBar: FC<ScrollBarProps> = ({
       const newScroll = clampValue({
         min: 0,
         value: startScroll + delta,
-        max: getScrollBarLength() - getThumbLength(),
+        max: scrollbarLength - thumbLength,
       });
-      onScroll(horizontal, (newScroll / getScrollBarLength()) * contentLength);
+      onScroll(horizontal, (newScroll / scrollbarLength) * contentLength);
     };
 
     const onMouseUp = () => {
+      setIsDragging(false);
       window.removeEventListener("mousemove", onMouseMove);
       window.removeEventListener("mouseup", onMouseUp);
     };
@@ -108,27 +106,29 @@ const ScrollBar: FC<ScrollBarProps> = ({
   };
 
   const getThumbDimensionsStyles = () => {
+    let result = {};
     if (horizontal) {
-      return {
-        width: `${getThumbLength()}px`,
+      result = {
+        width: `${thumbLength}px`,
         top: "0px",
         left: `${clampValue({
           min: 0,
           value: convertScroll(scrollPosition),
-          max: getScrollBarLength() - getThumbLength(),
+          max: scrollbarLength - thumbLength,
         })}px`,
       };
     } else {
-      return {
-        height: `${getThumbLength()}px`,
+      result = {
+        height: `${thumbLength}px`,
         top: `${clampValue({
           min: 0,
           value: convertScroll(scrollPosition),
-          max: getScrollBarLength() - getThumbLength(),
+          max: scrollbarLength - thumbLength,
         })}px`,
         left: "0px",
       };
     }
+    return result;
   };
 
   const handleClickOnScrollBar = (event: MouseEvent) => {
@@ -138,10 +138,10 @@ const ScrollBar: FC<ScrollBarProps> = ({
       horizontal ? event.clientX - rect.x : event.clientY - rect.y;
     const newScroll = clampValue({
       min: 0,
-      value: getClickLocation() - getThumbLength() / 2,
-      max: getScrollBarLength() - getThumbLength(),
+      value: getClickLocation() - thumbLength / 2,
+      max: scrollbarLength - thumbLength,
     });
-    onScroll(horizontal, (newScroll / getScrollBarLength()) * contentLength);
+    onScroll(horizontal, (newScroll / scrollbarLength) * contentLength);
   };
 
   const handleClickOnThumb = (event: MouseEvent) => {
@@ -149,28 +149,44 @@ const ScrollBar: FC<ScrollBarProps> = ({
     event.stopPropagation();
   };
 
-  return (
-    <>
-      {displayedContentLength < contentLength && (
-        <div
-          ref={scrollBarRef}
-          className={
-            horizontal ? styles.scrollBarHorizontal : styles.scrollBarVertical
-          }
-          onClick={handleClickOnScrollBar}
-        >
-          <div
-            ref={thumbRef}
-            className={styles.thumb}
-            style={getThumbDimensionsStyles()}
-            onClick={handleClickOnThumb}
-            onMouseDown={handleMouseDown}
-            onTouchStart={handleTouchStar}
-          ></div>
-        </div>
-      )}
-    </>
-  );
+  useEffect(() => {
+    if (scrollBarRef.current) {
+      setScrollBarLength(
+        scrollBarRef.current[horizontal ? "clientWidth" : "clientHeight"]
+      );
+    }
+  }, [scrollBarRef.current]);
+
+  useEffect(() => {
+    setThumbLength(
+      Math.floor((displayedContentLength / contentLength) * scrollbarLength)
+    );
+  }, [displayedContentLength, contentLength, scrollbarLength]);
+
+  useEffect(() => {
+    if (onIsDragging) {
+      onIsDragging(isDragging);
+    }
+  }, [isDragging]);
+
+  return displayedContentLength < contentLength ? (
+    <div
+      ref={scrollBarRef}
+      className={`${
+        horizontal ? "horizontalScrollBar" : "verticalScrollBar"
+      } ${className}`}
+      onClick={handleClickOnScrollBar}
+    >
+      <div
+        ref={thumbRef}
+        className={`thumb ${isDragging ? "dragging" : ""}`}
+        style={getThumbDimensionsStyles()}
+        onClick={handleClickOnThumb}
+        onMouseDown={handleMouseDown}
+        onTouchStart={handleTouchStar}
+      ></div>
+    </div>
+  ) : null;
 };
 
 export default ScrollBar;

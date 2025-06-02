@@ -1,0 +1,65 @@
+@use "@src/styles/abstracts/colors" as cls;
+
+$thumbNormalSize: 12px;
+$thumbXSSize: 5px;
+
+.horizontalScrollBar,
+.verticalScrollBar {
+  background-color: transparent;
+  position: relative;
+  flex: 1;
+  touch-action: none;
+  .thumb {
+    background-color: cls.$color-secondary;
+    position: absolute;
+    touch-action: none;
+
+    &:not(.xs) {
+      border-radius: 6px;
+    }
+
+    &.xs {
+      border-radius: 4px;
+    }
+  }
+}
+
+.horizontalScrollBar {
+  width: 100%;
+
+  &:not(.sx) {
+    height: $thumbNormalSize;
+
+    .thumb {
+      height: 100%;
+    }
+  }
+
+  &.xs {
+    height: $thumbXSSize;
+
+    .thumb {
+      height: $thumbXSSize;
+    }
+  }
+}
+
+.verticalScrollBar {
+  height: 100%;
+
+  &:not(.xs) {
+    width: $thumbNormalSize;
+
+    .thumb {
+      width: 100%;
+    }
+  }
+
+  &.xs {
+    width: $thumbXSSize;
+
+    .thumb {
+      width: 100%;
+    }
+  }
+}
